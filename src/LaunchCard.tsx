@@ -1,8 +1,7 @@
 import { FC } from 'react';
-import { Link } from 'react-router-dom';
 import { useDrag } from 'react-dnd';
 import { Card, CardActionArea, CardContent, Typography } from '@mui/material';
-import { LaunchCardDragType, Launch } from '../../types';
+import { LaunchCardDragType, Launch } from './types';
 
 interface Props {
 	draggable: boolean;
@@ -26,7 +25,7 @@ const LaunchCard: FC<Props> = ({ draggable, launch, dragType }) => {
 
 	return (
 		<Card variant="outlined" ref={dragRef}>
-			<CardActionArea component={Link} to={`/launch/${launch.key}`} target="_blank">
+			<CardActionArea>
 				<CardContent>
 					<Typography variant="h5">{launch.name}</Typography>
 				</CardContent>

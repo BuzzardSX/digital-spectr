@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { ConnectDropTarget } from 'react-dnd';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
 import LaunchCard from './LaunchCard';
-import { LaunchCardDragType, Launch } from '../../types';
+import { LaunchCardDragType, Launch } from './types';
 
 interface Props {
 	title: string;

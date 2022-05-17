@@ -1,28 +1,76 @@
-import { FC } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Provider } from 'react-redux';
-import { Container } from '@mui/material';
-import store from './store';
-import HomePage from './pages/HomePage';
-import LaunchPage from './pages/LaunchPage';
+import { FC, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useDrop } from 'react-dnd';
+import LaunchesColumn from './LaunchesColumn';
+import { Container, Grid, Typography } from '@mui/material';
+import { useAppDispatch, RootState } from './store';
+import { loadPast, loadUpcoming } from './features/launches';
+import { addReservedLaunch, removeReservedLaunch } from './features/user';
 
-const App: FC = () => {
+interface StackDropItem {
+	launchKey: string;
+}
+
+interface StackDropCollect {
+	isStackDropActive: boolean;
+}
+
+const HomePage: FC = () => {
+	const dispatch = useAppDispatch();
+
+	const pastLaunches = useSelector((state: RootState) => state.launches.past);
+
+	useEffect(() => {
+		dispatch(loadPast());
+		dispatch(loadUpcoming());
+	}, []);
+
+	const renderUpcomingLaunches = () => {
+		const launches = useSelector((state: RootState) => {
+			return state.launches.upcoming.filter(launch => {
+				return state.user.reservedLaunches.indexOf(launch.key) == -1;
+			});
+		});
+
+		const [, stackDropRef] = useDrop<StackDropItem, unknown, StackDropCollect>(() => ({
+			accept: 'reserved_launch_card',
+			drop: ({ launchKey }) => {
+				dispatch(removeReservedLaunch(launchKey));
+			}
+		}));
+
+		return (<LaunchesColumn title="Launches" draggableCards={true} launches={launches} stackDropRef={stackDropRef} cardDragType={'upcoming_launch_card'} />);
+	}
+
+	const renderReservedLaunches = () => {
+		const launches = useSelector((state: RootState) => {
+			return state.launches.upcoming.filter(launch => {
+				return state.user.reservedLaunches.indexOf(launch.key) != -1;
+			});
+		});
+
+		const [, stackDropRef] = useDrop<StackDropItem, unknown, StackDropCollect>(() => ({
+			accept: 'upcoming_launch_card',
+			drop: ({ launchKey }) => {
+				dispatch(addReservedLaunch(launchKey))
+			}
+		}));
+
+		return (<LaunchesColumn title="My launches" draggableCards={true} launches={launches} stackDropRef={stackDropRef} cardDragType={'reserved_launch_card'} />);
+	}
+
 	return (
-		<Provider store={store}>
-			<DndProvider backend={HTML5Backend}>
-				<BrowserRouter>
-					<Container>
-						<Routes>
-							<Route path="/" element={<HomePage />} />
-							<Route path="/launch/:key" element={<LaunchPage />} />
-						</Routes>
-					</Container>
-				</BrowserRouter>
-			</DndProvider>
-		</Provider>
+		<Container>
+			<Typography variant="h1" align="center" sx={{ my: 3 }}>Explore the space &#128125;</Typography>
+			<Grid container columns={3} spacing={2}>
+				<Grid item md={1}>
+					<LaunchesColumn title="Past launches" draggableCards={false} launches={pastLaunches} />
+				</Grid>
+				<Grid item md={1}>{renderUpcomingLaunches()}</Grid>
+				<Grid item md={1}>{renderReservedLaunches()}</Grid>
+			</Grid>
+		</Container>
 	);
-};
+}
 
-export default App;
+export default HomePage;
