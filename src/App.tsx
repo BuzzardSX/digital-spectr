@@ -1,9 +1,8 @@
 import { FC, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { useDrop } from 'react-dnd';
 import LaunchesColumn from './LaunchesColumn';
 import { Container, Grid, Typography } from '@mui/material';
-import { useAppDispatch, RootState } from './store';
+import { useAppSelector, useAppDispatch } from './store';
 import { loadPast, loadUpcoming } from './features/launches';
 import { addReservedLaunch, removeReservedLaunch } from './features/user';
 
@@ -18,7 +17,9 @@ interface StackDropCollect {
 const HomePage: FC = () => {
 	const dispatch = useAppDispatch();
 
-	const pastLaunches = useSelector((state: RootState) => state.launches.past);
+	const pastLaunches = useAppSelector(state => state.launches.past.values);
+
+	const isPastLaunchesLoading = useAppSelector(state => state.launches.past.isLoading);
 
 	useEffect(() => {
 		dispatch(loadPast());
@@ -26,8 +27,10 @@ const HomePage: FC = () => {
 	}, []);
 
 	const renderUpcomingLaunches = () => {
-		const launches = useSelector((state: RootState) => {
-			return state.launches.upcoming.filter(launch => {
+		const isLoading = useAppSelector(state => state.launches.past.isLoading);
+
+		const launches = useAppSelector(state => {
+			return state.launches.upcoming.values.filter(launch => {
 				return state.user.reservedLaunches.indexOf(launch.key) == -1;
 			});
 		});
@@ -39,12 +42,14 @@ const HomePage: FC = () => {
 			}
 		}));
 
-		return (<LaunchesColumn title="Launches" draggableCards={true} launches={launches} stackDropRef={stackDropRef} cardDragType={'upcoming_launch_card'} />);
+		return (<LaunchesColumn title="Launches" draggableCards={true} launches={launches} stackDropRef={stackDropRef} cardDragType={'upcoming_launch_card'} isLoading={isLoading} />);
 	}
 
 	const renderReservedLaunches = () => {
-		const launches = useSelector((state: RootState) => {
-			return state.launches.upcoming.filter(launch => {
+		// const isLoading = useAppSelector(state => state.launches.past.isLoading);
+
+		const launches = useAppSelector(state => {
+			return state.launches.upcoming.values.filter(launch => {
 				return state.user.reservedLaunches.indexOf(launch.key) != -1;
 			});
 		});
@@ -56,7 +61,7 @@ const HomePage: FC = () => {
 			}
 		}));
 
-		return (<LaunchesColumn title="My launches" draggableCards={true} launches={launches} stackDropRef={stackDropRef} cardDragType={'reserved_launch_card'} />);
+		return (<LaunchesColumn title="My launches" draggableCards={true} launches={launches} stackDropRef={stackDropRef} cardDragType={'reserved_launch_card'} isLoading={launches.length == 0} />);
 	}
 
 	return (
@@ -64,7 +69,7 @@ const HomePage: FC = () => {
 			<Typography variant="h1" align="center" sx={{ my: 3 }}>Explore the space &#128125;</Typography>
 			<Grid container columns={3} spacing={2}>
 				<Grid item md={1}>
-					<LaunchesColumn title="Past launches" draggableCards={false} launches={pastLaunches} />
+					<LaunchesColumn title="Past launches" draggableCards={false} launches={pastLaunches} isLoading={isPastLaunchesLoading} />
 				</Grid>
 				<Grid item md={1}>{renderUpcomingLaunches()}</Grid>
 				<Grid item md={1}>{renderReservedLaunches()}</Grid>

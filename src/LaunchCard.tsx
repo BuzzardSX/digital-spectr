@@ -1,7 +1,8 @@
 import { FC } from 'react';
 import { useDrag } from 'react-dnd';
 import { Card, CardActionArea, CardContent, Typography } from '@mui/material';
-import { LaunchCardDragType, Launch } from './types';
+import { LaunchCardDragType } from './types';
+import { Launch } from './features/launches/types';
 
 interface Props {
 	draggable: boolean;

@@ -2,7 +2,8 @@ import { FC } from 'react';
 import { ConnectDropTarget } from 'react-dnd';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
 import LaunchCard from './LaunchCard';
-import { LaunchCardDragType, Launch } from './types';
+import { LaunchCardDragType } from './types';
+import { Launch } from './features/launches/types';
 
 interface Props {
 	title: string;
@@ -10,9 +11,10 @@ interface Props {
 	launches: Array<Launch>;
 	stackDropRef?: ConnectDropTarget;
 	cardDragType?: LaunchCardDragType;
+	isLoading?: boolean;
 }
 
-const LaunchesColumn: FC<Props> = ({ title, draggableCards, launches, stackDropRef, cardDragType }) => {
+const LaunchesColumn: FC<Props> = ({ title, draggableCards, launches, stackDropRef, cardDragType, isLoading }) => {
 	const boxStyle: SxProps = {
 		border: 1,
 		borderColor: 'grey.300',

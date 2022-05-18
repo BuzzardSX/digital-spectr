@@ -1,15 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Launch } from '../types';
-
-interface State {
-	past: Launch[];
-	upcoming: Launch[];
-}
-
-const initialState: State = {
-	past: [],
-	upcoming: []
-};
+import { initialState } from './state';
+import { Launch } from './types';
 
 export const loadPast = createAsyncThunk<Launch[]>('load_past', async () => {
 	const resp = await fetch('https://api.spacexdata.com/v4/launches/past');
@@ -39,15 +30,24 @@ const { reducer } = createSlice({
 	name: 'launches',
 	initialState,
 	reducers: {},
-	extraReducers: (builder) => builder
-		.addCase(loadPast.fulfilled, (state, action) => ({
+	extraReducers: (builder) => {
+		builder.addCase(loadPast.fulfilled, (state, action) => ({
 			...state,
-			past: action.payload
-		}))
-		.addCase(loadUpcoming.fulfilled, (state, action) => ({
+			past: {
+				...state.past,
+				values: action.payload,
+				isLoading: false
+			}
+		}));
+		builder.addCase(loadUpcoming.fulfilled, (state, action) => ({
 			...state,
-			upcoming: action.payload
-		}))
+			upcoming: {
+				...state.upcoming,
+				values: action.payload,
+				isLoading: false
+			}
+		}));
+	}
 });
 
 export default reducer;
