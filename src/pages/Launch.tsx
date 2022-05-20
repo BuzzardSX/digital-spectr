@@ -1,16 +1,17 @@
 import { FC, useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 import { Box, Typography } from '@mui/material';
 
 interface Launch {
 	name: string;
-	details: string;
 	startTime: string;
 }
 
 const LaunchPage: FC = () => {
+	const { key } = useParams();
+
 	const [launch, setLaunch] = useState<Launch>({
 		name: '',
-		details: '',
 		startTime: ''
 	});
 
@@ -22,13 +23,12 @@ const LaunchPage: FC = () => {
 		setLaunch(state => ({
 			...state,
 			name: json.name,
-			details: json.details,
 			startTime: json.date_local
 		}));
 	};
 
 	useEffect(() => {
-		loadLaunch('6243ae24af52800c6e919258');
+		loadLaunch(key!);
 	}, []);
 
 	return (
