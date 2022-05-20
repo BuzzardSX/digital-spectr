@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { ConnectDropTarget } from 'react-dnd';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
-import SkeletonStack from './SkeletonStack';
-import Item from '../Item';
+import Item from './Item';
+import SkeletonItem from './SkeletonItem';
 import { LaunchCardDragType } from '../../types';
 import { Launch } from '../../types';
 
@@ -12,10 +12,10 @@ interface Props {
 	launches: Array<Launch>;
 	stackDropRef?: ConnectDropTarget;
 	cardDragType?: LaunchCardDragType;
-	pending: boolean;
+	pending?: boolean;
 }
 
-const Column: FC<Props> = ({ title, draggableCards, launches, stackDropRef, cardDragType, pending }) => {
+const Column: FC<Props> = ({ title, draggableCards, launches, stackDropRef, cardDragType, pending = false }) => {
 	const boxStyle: SxProps = {
 		border: 1,
 		borderColor: 'grey.300',
@@ -24,19 +24,19 @@ const Column: FC<Props> = ({ title, draggableCards, launches, stackDropRef, card
 		height: '100%'
 	};
 
-	const stack = (
-		<Stack ref={stackDropRef} spacing={2} sx={{ height: '100%' }}>
-			{launches?.map(launch => {
-				return (<Item key={launch.key} draggable={draggableCards} launch={launch} dragType={cardDragType} />);
-			})}
-		</Stack>
-	);
+	const items = launches?.map(launch => {
+		return (<Item key={launch.key} draggable={draggableCards} launch={launch} dragType={cardDragType} />);
+	});
+
+	const skeletonItems = [...Array(10)].map((item, index) => <SkeletonItem key={index} />);
 
 	return (
 		<>
 			<Typography variant="h4" align="center" sx={{ py: 2 }}>{title}</Typography>
 			<Box sx={boxStyle}>
-				{pending ? <SkeletonStack /> : stack}
+				<Stack ref={stackDropRef} spacing={2} sx={{ height: '100%' }}>
+					{pending ? skeletonItems : items}
+				</Stack>
 			</Box>
 		</>
 	);

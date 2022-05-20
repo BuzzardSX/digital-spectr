@@ -59,7 +59,7 @@ const ReservationKanban: FC = () => {
 			}
 		}));
 
-		return (<Column title="My launches &#128640;" draggableCards launches={launches} stackDropRef={stackDropRef} cardDragType={'reserved_launch_card'} pending={false} />);
+		return (<Column title="My launches &#128640;" draggableCards launches={launches} stackDropRef={stackDropRef} cardDragType={'reserved_launch_card'} />);
 	}
 
 	return (

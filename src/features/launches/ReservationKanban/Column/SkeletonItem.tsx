@@ -1,10 +1,8 @@
 import { FC } from 'react';
-import { Stack, Card, CardContent, CardActionArea, Skeleton, Typography } from '@mui/material';
+import { Card, CardContent, CardActionArea, Skeleton, Typography } from '@mui/material';
 
-const perPage = 10;
-
-const SkeletonStack: FC = () => {
-	const item = (
+const SkeletonItem: FC = () => {
+	return (
 		<Card variant="outlined">
 			<CardActionArea>
 				<CardContent>
@@ -18,12 +16,6 @@ const SkeletonStack: FC = () => {
 			</CardActionArea>
 		</Card>
 	);
-
-	return (
-		<Stack spacing={1}>
-			{[...Array(perPage)].map(() => item)}
-		</Stack>
-	);
 }
 
-export default SkeletonStack;
+export default SkeletonItem;

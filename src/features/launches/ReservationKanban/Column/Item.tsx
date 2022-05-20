@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { useDrag } from 'react-dnd';
 import { Card, CardActionArea, CardContent, Typography } from '@mui/material';
-import { LaunchCardDragType } from '../types';
-import { Launch } from '../types';
+import { LaunchCardDragType } from '../../types';
+import { Launch } from '../../types';
 
 interface Props {
 	draggable: boolean;
@@ -29,7 +29,7 @@ const Item: FC<Props> = ({ draggable, launch, dragType }) => {
 			<CardActionArea>
 				<CardContent>
 					<Typography variant="h6">{launch.name}</Typography>
-					<Typography variant="subtitle1">{launch.startTime.toDateString()}</Typography>
+					<Typography variant="subtitle1">{new Date(launch.startTime).toDateString()}</Typography>
 				</CardContent>
 			</CardActionArea>
 		</Card>
