@@ -33,19 +33,19 @@ const { reducer } = createSlice({
 	initialState,
 	reducers: {},
 	extraReducers: (builder) => {
-		builder.addCase(loadPast.fulfilled, (state, action) => ({
+		builder.addCase(loadPast.fulfilled, (state, { payload }) => ({
 			...state,
 			past: {
 				...state.past,
-				values: action.payload,
+				values: payload,
 				pending: false
 			}
 		}));
-		builder.addCase(loadUpcoming.fulfilled, (state, action) => ({
+		builder.addCase(loadUpcoming.fulfilled, (state, { payload }) => ({
 			...state,
 			upcoming: {
 				...state.upcoming,
-				values: action.payload,
+				values: payload,
 				pending: false
 			}
 		}));

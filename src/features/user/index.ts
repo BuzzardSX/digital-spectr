@@ -1,13 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import { initialState } from './state';
-
-export const loadReservedLaunches = createAsyncThunk<string[]>('load_reserved_launches', async () => {
-	const resp = await fetch('/user/reservedLaunches');
-	const json = resp.json();
-	console.log(json);
-
-	return [];
-});
 
 export const addReservedLaunch = createAsyncThunk<string, string>('add_reserved_launch', async (key) => {
 	const body = JSON.stringify({ key });
@@ -34,21 +26,41 @@ export const removeReservedLaunch = createAsyncThunk<string, string>('remove_res
 	return key;
 });
 
+export const setReservedLaunchesPickedKey = createAction<string>('set_reserved_launches_picked_key');
+
+// export const setReservedLaunchesPickedKey = createAsyncThunk<string, string>('set_reserved_launches_picked_key', (key) => {
+// 	return key;
+// });
+
 const { reducer } = createSlice({
 	name: 'user',
 	initialState,
 	reducers: {},
 	extraReducers: (builder) => {
-		builder.addCase(addReservedLaunch.fulfilled, (state, action) => ({
+		builder.addCase(addReservedLaunch.fulfilled, (state, { payload }) => ({
 			...state,
-			reservedLaunches: [
+			reservedLaunches: {
 				...state.reservedLaunches,
-				action.payload
-			]
+				keys: [
+					...state.reservedLaunches.keys,
+					payload
+				],
+				pickedKey: payload
+			}
 		}));
-		builder.addCase(removeReservedLaunch.fulfilled, (state, action) => ({
+		builder.addCase(removeReservedLaunch.fulfilled, (state, { payload }) => ({
 			...state,
-			reservedLaunches: state.reservedLaunches.filter(launch => launch != action.payload)
+			reservedLaunches: {
+				...state.reservedLaunches,
+				keys: state.reservedLaunches.keys.filter(launch => launch != payload)
+			}
+		}));
+		builder.addCase(setReservedLaunchesPickedKey, (state, { payload }) => ({
+			...state,
+			reservedLaunches: {
+				...state.reservedLaunches,
+				pickedKey: payload
+			}
 		}));
 	}
 });

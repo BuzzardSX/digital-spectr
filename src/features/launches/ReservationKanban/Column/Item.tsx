@@ -27,7 +27,7 @@ const Item: FC<Props> = ({ draggable, launch, dragType }) => {
 
 	return (
 		<Card variant="outlined" ref={dragRef}>
-			<CardActionArea >
+			<CardActionArea component={Link} to={`/launch/${launch.key}`}>
 				<CardContent>
 					<Typography variant="h6">{launch.name}</Typography>
 					<Typography variant="subtitle1">{new Date(launch.startTime).toDateString()}</Typography>

@@ -1,7 +1,15 @@
 export const initialState: State = {
-	reservedLaunches: []
+	reservedLaunches: {
+		keys: [],
+		pickedKey: "init"
+	}
 };
 
+interface ReservedLaunches {
+	keys: string[];
+	pickedKey: string;
+}
+
 interface State {
-	reservedLaunches: string[];
+	reservedLaunches: ReservedLaunches;
 }

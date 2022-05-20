@@ -1,11 +1,11 @@
 import { FC, useState, useEffect } from 'react';
 import { useDrop } from 'react-dnd';
 import Column from './Column';
-import { Grid, Snackbar, Typography, IconButton } from '@mui/material';
+import { Grid, Snackbar, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Typography, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAppSelector, useAppDispatch } from '../../../store';
 import { loadPast, loadUpcoming } from '../index';
-import { addReservedLaunch, removeReservedLaunch } from '../../user';
+import { addReservedLaunch, removeReservedLaunch, setReservedLaunchesPickedKey } from '../../user';
 
 interface StackDropItem {
 	launchKey: string;
@@ -16,20 +16,29 @@ interface StackDropCollect {
 }
 
 const ReservationKanban: FC = () => {
-	const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+	const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+	const [dialogOpen, setDialogOpen] = useState(false);
 
 	const dispatch = useAppDispatch();
 
 	const pastLaunches = useAppSelector(state => state.launches.past.values);
 
-	const lastReservedLaunch = useAppSelector(state => {
-		const length = state.user.reservedLaunches.length;
-		const key = state.user.reservedLaunches[length - 1];
-		const launch = state.launches.upcoming.values.find(v => v.key == key);
-		return launch?.name;
+	const pickedReservedLaunch = useAppSelector(state => {
+		const launch = state.launches.upcoming.values.find(v => {
+			return v.key == state.user.reservedLaunches.pickedKey;
+		});
+		return launch!;
 	});
 
-	const isPastLaunchesLoading = useAppSelector(state => state.launches.past.pending);
+	const lastReservedLaunch = useAppSelector(state => {
+		const length = state.user.reservedLaunches.keys.length;
+		const key = state.user.reservedLaunches.keys[length - 1];
+		const launch = state.launches.upcoming.values.find(value => value.key == key);
+		return launch!;
+	});
+
+	const isPastLaunchesPending = useAppSelector(state => state.launches.past.pending);
 
 	useEffect(() => {
 		dispatch(loadPast());
@@ -37,28 +46,37 @@ const ReservationKanban: FC = () => {
 	}, []);
 
 	const renderUpcomingLaunches = () => {
-		const isLoading = useAppSelector(state => state.launches.past.pending);
+		const isPending = useAppSelector(state => state.launches.past.pending);
 
 		const launches = useAppSelector(state => {
 			return state.launches.upcoming.values.filter(launch => {
-				return state.user.reservedLaunches.indexOf(launch.key) == -1;
+				return state.user.reservedLaunches.keys.indexOf(launch.key) == -1;
 			});
 		});
 
 		const [, stackDropRef] = useDrop<StackDropItem, unknown, StackDropCollect>(() => ({
 			accept: 'reserved_launch_card',
 			drop: ({ launchKey }) => {
-				dispatch(removeReservedLaunch(launchKey));
+				dispatch(setReservedLaunchesPickedKey(launchKey));
+				setDialogOpen(true);
 			}
 		}));
 
-		return (<Column title="Launches &#128760;" draggableCards launches={launches} stackDropRef={stackDropRef} cardDragType={'upcoming_launch_card'} pending={isLoading} />);
+		return (
+			<Column
+				title="Launches &#128760;"
+				draggableCards launches={launches}
+				stackDropRef={stackDropRef}
+				cardDragType={'upcoming_launch_card'}
+				pending={isPending}
+			/>
+		);
 	}
 
 	const renderReservedLaunches = () => {
 		const launches = useAppSelector(state => {
 			return state.launches.upcoming.values.filter(launch => {
-				return state.user.reservedLaunches.indexOf(launch.key) != -1;
+				return state.user.reservedLaunches.keys.indexOf(launch.key) != -1;
 			});
 		});
 
@@ -70,8 +88,18 @@ const ReservationKanban: FC = () => {
 			}
 		}));
 
-		return (<Column title="My launches &#128640;" draggableCards launches={launches} stackDropRef={stackDropRef} cardDragType={'reserved_launch_card'} />);
+		return (
+			<Column
+				title="My launches &#128640;"
+				draggableCards
+				launches={launches}
+				stackDropRef={stackDropRef}
+				cardDragType={'reserved_launch_card'}
+			/>
+		);
 	}
+
+	const snackbarMessage = `${lastReservedLaunch?.name} successfully added`;
 
 	const handleSnackbarClose = () => {
 		setSnackbarOpen(false);
@@ -83,17 +111,46 @@ const ReservationKanban: FC = () => {
 		</IconButton>
 	);
 
+	const handleYes = async () => {
+		await dispatch(removeReservedLaunch(pickedReservedLaunch.key));
+		setDialogOpen(false);
+	};
+
 	return (
 		<>
 			<Typography variant="h2" align="center" sx={{ my: 3 }}>Explore the space &#128125;</Typography>
 			<Grid container columns={3} spacing={3}>
 				<Grid item md={1}>
-					<Column title="Past launches &#127756;" draggableCards={false} launches={pastLaunches} pending={isPastLaunchesLoading} />
+					<Column
+						title="Past launches &#127756;"
+						draggableCards={false}
+						launches={pastLaunches}
+						pending={isPastLaunchesPending}
+					/>
 				</Grid>
 				<Grid item md={1}>{renderUpcomingLaunches()}</Grid>
 				<Grid item md={1}>{renderReservedLaunches()}</Grid>
 			</Grid>
-			<Snackbar open={snackbarOpen} message={`${lastReservedLaunch} successfully added`} autoHideDuration={3000} action={snackbarAction} onClose={handleSnackbarClose} />
+			<Snackbar
+				open={snackbarOpen}
+				message={snackbarMessage}
+				autoHideDuration={4000}
+				anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+				action={snackbarAction}
+				onClose={handleSnackbarClose}
+			/>
+			<Dialog open={dialogOpen}>
+				<DialogTitle>Confirm cancellation</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						Are you sure want to cancel reservation?
+					</DialogContentText>
+					<DialogActions>
+						<Button onClick={handleYes}>Yes</Button>
+						<Button onClick={() => setDialogOpen(false)}>No</Button>
+					</DialogActions>
+				</DialogContent>
+			</Dialog>
 		</>
 	);
 }
