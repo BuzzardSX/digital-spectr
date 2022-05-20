@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react';
 import { useDrop } from 'react-dnd';
 import Column from './Column';
-import { Container, Grid, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { useAppSelector, useAppDispatch } from '../../../store';
 import { loadPast, loadUpcoming } from '../index';
 import { addReservedLaunch, removeReservedLaunch } from '../../user';
@@ -63,7 +63,7 @@ const ReservationKanban: FC = () => {
 	}
 
 	return (
-		<Container>
+		<>
 			<Typography variant="h2" align="center" sx={{ my: 3 }}>Explore the space &#128125;</Typography>
 			<Grid container columns={3} spacing={3}>
 				<Grid item md={1}>
@@ -72,7 +72,7 @@ const ReservationKanban: FC = () => {
 				<Grid item md={1}>{renderUpcomingLaunches()}</Grid>
 				<Grid item md={1}>{renderReservedLaunches()}</Grid>
 			</Grid>
-		</Container>
+		</>
 	);
 }
 

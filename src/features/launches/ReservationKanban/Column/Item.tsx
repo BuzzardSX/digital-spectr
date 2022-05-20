@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { Link } from 'react-router-dom';
 import { useDrag } from 'react-dnd';
 import { Card, CardActionArea, CardContent, Typography } from '@mui/material';
 import { LaunchCardDragType } from '../../types';
@@ -26,7 +27,7 @@ const Item: FC<Props> = ({ draggable, launch, dragType }) => {
 
 	return (
 		<Card variant="outlined" ref={dragRef}>
-			<CardActionArea>
+			<CardActionArea >
 				<CardContent>
 					<Typography variant="h6">{launch.name}</Typography>
 					<Typography variant="subtitle1">{new Date(launch.startTime).toDateString()}</Typography>
