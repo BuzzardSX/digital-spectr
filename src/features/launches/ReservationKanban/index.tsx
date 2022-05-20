@@ -22,6 +22,13 @@ const ReservationKanban: FC = () => {
 
 	const pastLaunches = useAppSelector(state => state.launches.past.values);
 
+	const lastReservedLaunch = useAppSelector(state => {
+		const length = state.user.reservedLaunches.length;
+		const key = state.user.reservedLaunches[length - 1];
+		const launch = state.launches.upcoming.values.find(v => v.key == key);
+		return launch?.name;
+	});
+
 	const isPastLaunchesLoading = useAppSelector(state => state.launches.past.pending);
 
 	useEffect(() => {
@@ -86,7 +93,7 @@ const ReservationKanban: FC = () => {
 				<Grid item md={1}>{renderUpcomingLaunches()}</Grid>
 				<Grid item md={1}>{renderReservedLaunches()}</Grid>
 			</Grid>
-			<Snackbar open={snackbarOpen} message="Successfully added" autoHideDuration={3000} action={snackbarAction} onClose={handleSnackbarClose} />
+			<Snackbar open={snackbarOpen} message={`${lastReservedLaunch} successfully added`} autoHideDuration={3000} action={snackbarAction} onClose={handleSnackbarClose} />
 		</>
 	);
 }
