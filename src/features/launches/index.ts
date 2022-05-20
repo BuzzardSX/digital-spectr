@@ -36,7 +36,7 @@ const { reducer } = createSlice({
 			past: {
 				...state.past,
 				values: action.payload,
-				isLoading: false
+				pending: false
 			}
 		}));
 		builder.addCase(loadUpcoming.fulfilled, (state, action) => ({
@@ -44,7 +44,7 @@ const { reducer } = createSlice({
 			upcoming: {
 				...state.upcoming,
 				values: action.payload,
-				isLoading: false
+				pending: false
 			}
 		}));
 	}

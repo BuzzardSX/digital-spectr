@@ -3,22 +3,22 @@ import { Launch } from './types';
 export const initialState: State = {
 	past: {
 		values: [],
-		isLoading: true
+		pending: true
 	},
 	upcoming: {
 		values: [],
-		isLoading: true
+		pending: true
 	}
 };
 
 interface Past {
 	values: Launch[];
-	isLoading: boolean;
+	pending: boolean;
 }
 
 interface Upcoming {
 	values: Launch[];
-	isLoading: boolean;
+	pending: boolean;
 }
 
 interface State {
