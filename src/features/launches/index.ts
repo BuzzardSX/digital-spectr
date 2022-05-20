@@ -3,11 +3,11 @@ import { initialState } from './state';
 import { Launch } from './types';
 
 export const loadPast = createAsyncThunk<Launch[]>('load_past', async () => {
-	const resp = await fetch('https://api.spacexdata.com/v3/launches/past?order=desc');
+	const resp = await fetch('https://api.spacexdata.com/v3/launches/past?order=desc&limit=20');
 	const json = await resp.json();
 
 	const launches = json.map(item => ({
-		key: item.id,
+		key: item.flight_number,
 		name: item.mission_name,
 		startTime: item.launch_date_local
 	}));

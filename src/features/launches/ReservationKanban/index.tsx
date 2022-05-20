@@ -1,7 +1,8 @@
-import { FC, useEffect } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { useDrop } from 'react-dnd';
 import Column from './Column';
-import { Grid, Typography } from '@mui/material';
+import { Grid, Snackbar, Typography, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { useAppSelector, useAppDispatch } from '../../../store';
 import { loadPast, loadUpcoming } from '../index';
 import { addReservedLaunch, removeReservedLaunch } from '../../user';
@@ -15,6 +16,8 @@ interface StackDropCollect {
 }
 
 const ReservationKanban: FC = () => {
+	const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+
 	const dispatch = useAppDispatch();
 
 	const pastLaunches = useAppSelector(state => state.launches.past.values);
@@ -54,13 +57,24 @@ const ReservationKanban: FC = () => {
 
 		const [, stackDropRef] = useDrop<StackDropItem, unknown, StackDropCollect>(() => ({
 			accept: 'upcoming_launch_card',
-			drop: ({ launchKey }) => {
-				dispatch(addReservedLaunch(launchKey))
+			drop: async ({ launchKey }) => {
+				await dispatch(addReservedLaunch(launchKey));
+				setSnackbarOpen(true);
 			}
 		}));
 
 		return (<Column title="My launches &#128640;" draggableCards launches={launches} stackDropRef={stackDropRef} cardDragType={'reserved_launch_card'} />);
 	}
+
+	const handleSnackbarClose = () => {
+		setSnackbarOpen(false);
+	};
+
+	const snackbarAction = (
+		<IconButton color="inherit" onClick={handleSnackbarClose}>
+			<CloseIcon />
+		</IconButton>
+	);
 
 	return (
 		<>
@@ -72,6 +86,7 @@ const ReservationKanban: FC = () => {
 				<Grid item md={1}>{renderUpcomingLaunches()}</Grid>
 				<Grid item md={1}>{renderReservedLaunches()}</Grid>
 			</Grid>
+			<Snackbar open={snackbarOpen} message="Successfully added" autoHideDuration={3000} action={snackbarAction} onClose={handleSnackbarClose} />
 		</>
 	);
 }
