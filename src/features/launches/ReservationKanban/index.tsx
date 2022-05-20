@@ -42,7 +42,7 @@ const ReservationKanban: FC = () => {
 			}
 		}));
 
-		return (<Column title="Launches" draggableCards launches={launches} stackDropRef={stackDropRef} cardDragType={'upcoming_launch_card'} pending={isLoading} />);
+		return (<Column title="Launches &#128760;" draggableCards launches={launches} stackDropRef={stackDropRef} cardDragType={'upcoming_launch_card'} pending={isLoading} />);
 	}
 
 	const renderReservedLaunches = () => {
@@ -59,15 +59,15 @@ const ReservationKanban: FC = () => {
 			}
 		}));
 
-		return (<Column title="My launches" draggableCards launches={launches} stackDropRef={stackDropRef} cardDragType={'reserved_launch_card'} pending={launches.length == 0} />);
+		return (<Column title="My launches &#128640;" draggableCards launches={launches} stackDropRef={stackDropRef} cardDragType={'reserved_launch_card'} pending={false} />);
 	}
 
 	return (
 		<Container>
-			<Typography variant="h1" align="center" sx={{ my: 3 }}>Explore the space &#128125;</Typography>
-			<Grid container columns={3} spacing={2}>
+			<Typography variant="h2" align="center" sx={{ my: 3 }}>Explore the space &#128125;</Typography>
+			<Grid container columns={3} spacing={3}>
 				<Grid item md={1}>
-					<Column title="Past launches" draggableCards={false} launches={pastLaunches} pending={isPastLaunchesLoading} />
+					<Column title="Past launches &#127756;" draggableCards={false} launches={pastLaunches} pending={isPastLaunchesLoading} />
 				</Grid>
 				<Grid item md={1}>{renderUpcomingLaunches()}</Grid>
 				<Grid item md={1}>{renderReservedLaunches()}</Grid>

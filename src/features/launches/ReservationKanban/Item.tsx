@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useDrag } from 'react-dnd';
-import { Card, CardActionArea, CardContent, Typography, Skeleton } from '@mui/material';
+import { Card, CardActionArea, CardContent, Typography } from '@mui/material';
 import { LaunchCardDragType } from '../types';
 import { Launch } from '../types';
 
@@ -8,10 +8,9 @@ interface Props {
 	draggable: boolean;
 	dragType?: LaunchCardDragType;
 	launch: Launch;
-	pending: boolean;
 }
 
-const Item: FC<Props> = ({ draggable, launch, dragType, pending }) => {
+const Item: FC<Props> = ({ draggable, launch, dragType }) => {
 	let dragRef = null;
 
 	if (draggable) {
@@ -26,15 +25,14 @@ const Item: FC<Props> = ({ draggable, launch, dragType, pending }) => {
 	}
 
 	return (
-		<>
-			<Card variant="outlined" ref={dragRef}>
-				<CardActionArea>
-					<CardContent>
-						<Typography variant="h5">{launch.name}</Typography>
-					</CardContent>
-				</CardActionArea>
-			</Card>
-		</>
+		<Card variant="outlined" ref={dragRef}>
+			<CardActionArea>
+				<CardContent>
+					<Typography variant="h6">{launch.name}</Typography>
+					<Typography variant="subtitle1">{launch.startTime.toDateString()}</Typography>
+				</CardContent>
+			</CardActionArea>
+		</Card>
 	);
 }
 
